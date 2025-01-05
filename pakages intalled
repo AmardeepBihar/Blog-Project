@@ -1,0 +1,5 @@
+Pandas
+Faker
+django-import-export - Refer website : https://django-import-export.readthedocs.io/en/latest/installation.html
+to create requirements.txt fir run cmd
+pip freeze > requirements.txt
