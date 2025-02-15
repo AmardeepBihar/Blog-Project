@@ -1,0 +1,232 @@
+{% extends 'header&footer/base.html' %}
+
+{% block title %}{{ next_question.question }}{% endblock %}
+
+{% block content %}
+
+<head>
+    <style>
+        /* Custom Radio Button Styles */
+        .custom-radio {
+            border: 2px solid black;
+        }
+
+        .custom-radio:checked {
+            border-color: #28a745 !important;
+        }
+
+        .custom-radio:checked:before {
+            background-color: #28a745 !important;
+        }
+
+        .selected {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .correct {
+            background-color: #4acf85;
+            color: black;
+        }
+
+        .incorrect {
+            background-color: #f8d7da;
+            color: black;
+        }
+
+        /* Timer and Progress Bar Styling */
+        #timeTracker {
+            font-size: 16px;
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        #timeProgressBar {
+            width: 100%;
+            height: 25px;
+            background-color: #ddd;
+        }
+
+        #timeProgressBar div {
+            height: 100%;
+            background-color: #28a745;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<div class="row my-4 mx-4">
+    <div class="col-md-8 mb-3">
+        {% if next_question %}
+        <div class="card" style="border: 1px solid black;">
+            <div class="card-body mx-3 my-3">
+                <!-- Display Category Information -->
+                <p>
+                    <div style="font-size: 15px; display: inline-block;"><strong>Category:</strong> {{ category.name }}</div>
+                    <span>&nbsp;|&nbsp;</span>
+                    <div id="timeTracker" class="float-right" style="display: inline-block;">Time Remaining: <span id="timer">30</span> seconds</div>
+                </p>
+                
+                <!-- Timer Progress Bar -->
+                <div class="progress" id="timeProgressBar">
+                    <div id="progressBar" class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <hr style="border: 2px solid black;">
+                <!-- Display Question -->
+                <p style="font-size: 17px; font-weight: 600;" class="card-title">{{ next_question.question }}</p>
+
+                <!-- Options Form -->
+                <form id="quizForm">
+                    {% for option in options %}
+                    <div class="form-check">
+                        <input class="form-check-input custom-radio" type="radio" name="mcq_option" id="option{{ forloop.counter }}" value="{{ option }}" />
+                        <label class="form-check-label" for="option{{ forloop.counter }}">
+                            {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% elif forloop.counter == 4 %}D{% endif %}. {{ option }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </form>
+
+                <!-- Answer Message and Explanation Section -->
+                <div id="answer-container" class="mt-4" style="display: none;">
+                    <div id="answer-message" class="alert alert-info">
+                        <span id="correct-answer"></span>
+                    </div>
+                    <div id="explanation-message" style="margin-top: 10px; display: none;">
+                        <strong>Explanation: </strong>{{ next_question.explanation|safe }}
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <button type="button" id="submitBtn" class="btn btn-success form-control mt-3">Submit</button>
+                <button type="button" id="nextBtn" class="btn btn-success form-control mt-3" style="display:none;">Next</button>
+                <a href="{% url 'endpractice' %}" class="btn btn-danger form-control mt-3" style="display:none;" id="endPracticeBtn">End Practice</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <h5>There are no questions available in this category!</h5>
+    {% endif %}
+
+    <!-- Category Sidebar -->
+    <div class="col-md-4">
+        <h5 class="mb-3 text-center">Sub Categories</h5>
+        <ul class="list-group">
+            {% for category in cat_manu %}
+            <li class="list-group-item mt-1 text-center" style="border: 1px solid black;">
+                <a href="{% url 'category-wise-question' slug=category.slug %}" class="text-decoration-none fw-bold text-dark">{{ category.name|truncatewords:10 }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+    var selectedAnswer = null;
+    var isSubmitted = false;
+    var timeRemaining = 30; // Initial time in seconds
+    var timerElement = document.getElementById('timer');
+    var progressBar = document.getElementById('progressBar');
+
+    // Countdown Timer Function
+    function updateTimer() {
+        if (timeRemaining > 0) {
+            timeRemaining--;
+            timerElement.textContent = timeRemaining; // Update time remaining
+            progressBar.style.width = (timeRemaining / 30) * 100 + '%'; // Update progress bar with full 60 seconds
+        } else {
+            clearInterval(timerInterval); // Stop timer
+            alert("Time is up! Moving to next question.");
+            // Optionally, you can redirect here if you want after time runs out.
+            window.location.href = "{% url 'category-wise-question' category.uid %}?current_question={{ next_question.id }}";
+        }
+    }
+
+    // Start timer countdown when the page loads
+    var timerInterval = setInterval(updateTimer, 1000);
+
+    // Handle option selection
+    document.querySelectorAll('input[name="mcq_option"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            selectedAnswer = this.value;
+
+            // Show explanation and answer message if submitted
+            if (!isSubmitted) {
+                return;
+            }
+
+            var explanationMessage = document.getElementById("explanation-message");
+            explanationMessage.style.display = 'block';
+
+            var answerContainer = document.getElementById("answer-container");
+            var answerMessage = document.getElementById("answer-message");
+            var correctAnswerLabel = document.getElementById("correct-answer");
+
+            var correctAnswer = "{{ next_question.correct_answer }}";
+
+            answerContainer.style.display = 'block';
+
+            if (selectedAnswer === correctAnswer) {
+                correctAnswerLabel.innerHTML = 'Correct!';
+                answerMessage.classList.remove('alert-info', 'alert-danger');
+                answerMessage.classList.add('alert-success');
+                answerMessage.style.backgroundColor = '#4acf85';
+                answerMessage.style.color = 'black';
+            } else {
+                correctAnswerLabel.innerHTML = "Incorrect! The correct answer is: " + correctAnswer;
+                answerMessage.classList.remove('alert-info', 'alert-success');
+                answerMessage.classList.add('alert-danger');
+                answerMessage.style.backgroundColor = '#dc3545';
+                answerMessage.style.color = 'white';
+            }
+        });
+    });
+
+    // Submit button functionality
+    document.getElementById("submitBtn").addEventListener("click", function () {
+        if (selectedAnswer === null) {
+            alert("Please select an answer before submitting.");
+        } else {
+            isSubmitted = true;
+
+            // Hide submit button, show next and end practice buttons
+            document.getElementById("submitBtn").style.display = 'none';
+            document.getElementById("nextBtn").style.display = 'block';
+            document.getElementById("endPracticeBtn").style.display = 'block';
+
+            // Trigger the option change to show correct/incorrect answer
+            document.querySelector('input[name="mcq_option"]:checked').dispatchEvent(new Event('change'));
+
+            // Send selected answer to the backend
+            var data = {
+                selected_answer: selectedAnswer,
+                correct_answer: "{{ next_question.correct_answer }}",
+                question_id: "{{ next_question.id }}"
+            };
+
+            fetch("{% url 'update-session-results' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.status);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    });
+
+    // Next button functionality
+    document.getElementById("nextBtn").addEventListener("click", function () {
+        window.location.href = "{% url 'category-wise-question' slug=category.slug %}?current_question={{ next_question.id }}";
+    });
+</script>
+
+{% endblock %}

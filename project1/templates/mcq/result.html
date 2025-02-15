@@ -1,0 +1,192 @@
+{% extends 'header&footer/base.html' %}
+{% block content %}
+
+<head>
+    <title>Result-of-the-practice</title>
+    <style>
+        .watermark {
+            font-size: 30px;
+            color: rgb(214, 210, 210);
+        }
+
+        .result-heading {
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .bad {
+            background-color: red;
+            box-shadow: 0 0 20px red;
+        }
+
+        .not-bad {
+            background-color: orange;
+            box-shadow: 0 0 20px orange;
+        }
+
+        .good {
+            background-color: yellow;
+            color: black;
+            box-shadow: 0 0 20px yellow;
+        }
+
+        .very-good {
+            background-color: lightgreen;
+            box-shadow: 0 0 20px lightgreen;
+        }
+
+        .excellent {
+            background-color: green;
+            box-shadow: 0 0 20px green;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+            }
+
+            .watermark {
+                display: none;
+            }
+
+            .result-heading {
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .bad {
+                background-color: rgb(246, 59, 59) !important;
+                box-shadow: 0 0 20px rgb(246, 59, 59) !important;
+            }
+
+            .not-bad {
+                background-color: rgb(238, 165, 30) !important;
+                box-shadow: 0 0 20px rgb(238, 165, 30) !important;
+            }
+
+            .good {
+                background-color: yellow !important;
+                color: black !important;
+                box-shadow: 0 0 20px yellow !important;
+            }
+
+            .very-good {
+                background-color: lightgreen !important;
+                box-shadow: 0 0 20px lightgreen !important;
+            }
+
+            .excellent {
+                background-color: #198754 !important;
+                box-shadow: 0 0 20px #198754 !important;
+            }
+
+            #printBtn {
+                display: none;
+            }
+
+            .bg-light {
+                background-color: #f8f9fa !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Print Button, aligned to the right -->
+    <button id="printBtn" class="btn btn-success mt-3 me-3" style="float: right;">Print Score</button>
+
+    <!-- start result tab -->
+    <div class="bg-light container-fluid" id="resultTab">
+        <div class="watermark">Ram's Blog</div>
+        <h3 class="text-center py-4">Your Result Results</h3>
+
+        <!-- Display total questions attempted -->
+        <div class="mx-auto" style="max-width: 600px;">
+        <!-- Display the result heading based on score -->
+            <div class="result-heading 
+            {% if percentage < 30 %}bad{% elif percentage >= 30 and percentage < 40 %}not-bad{% elif percentage >= 40 and percentage < 60 %}good{% elif percentage >= 60 and percentage < 70 %}very-good{% else %}excellent{% endif %}">
+            {% if percentage < 30 %} Bad
+             {% elif percentage >= 30 and percentage < 40 %} Not Bad
+             {% elif percentage >= 40 and percentage < 60 %} Good
+            {% elif percentage >= 60 and percentage < 70 %} Very Good
+            {% else %} Excellent
+            {% endif %}
+            </div>
+            <hr style="border: 2px solid black;">
+            <div class="text-center">
+                <p><strong>Total Questions
+                        Attempted:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {{ attempted }}</p>
+            </div>
+
+            <!-- Display the number of correct answers -->
+            <div class="mb-3 text-center">
+                <p><strong>Correct
+                        Answers:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {{ correct }}</p>
+            </div>
+
+            <!-- Display the number of incorrect answers -->
+            <div class="mb-3 text-center">
+                <p><strong>Incorrect
+                        Answers:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {{ incorrect }}</p>
+            </div>
+
+            <!-- Display score as percentage -->
+            <div class="mb-3 text-center" style="margin-left: 37px;">
+                <p><strong>Score:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {{ percentage|floatformat:2 }}%</p>
+            </div>
+            
+
+            <!-- Provide a button to start a new practice session -->
+            <div class="mt-4 text-center">
+                <a href="{% url 'ansthequestion' next_question.uid %}"
+                    class="mb-4 form-control p-2 btn btn-success">Start New Practice</a>
+                <a href="{% url 'test-series' %}" class="mb-4 form-control p-2 btn btn-success">Test Series</a>
+            </div>
+        </div>
+        <div class="watermark text-end">Ram's Blog</div>
+    </div>
+
+    <!-- Add JavaScript for Printing -->
+    <script>
+        document.getElementById('printBtn').addEventListener('click', function () {
+            const printWindow = window.open('', '', 'height=600,width=800'); // Open a new window
+            const resultTabContent = document.getElementById('resultTab').innerHTML; // Get the content of the result tab
+
+            // Add a style to format the print content
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .watermark { display: none; }
+                            .result-heading {
+                                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                            }
+                            .bad { background-color: red !important; box-shadow: 0 0 20px red !important; }
+                            .not-bad { background-color: orange !important; box-shadow: 0 0 20px orange !important; }
+                            .good { background-color: yellow !important; color: black !important; box-shadow: 0 0 20px yellow !important; }
+                            .very-good { background-color: lightgreen !important; box-shadow: 0 0 20px lightgreen !important; }
+                            .excellent { background-color: green !important; box-shadow: 0 0 20px green !important; }
+                        </style>
+                    </head>
+                    <body>
+                        ${resultTabContent}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close(); // Close the document for printing
+            printWindow.print(); // Trigger the print dialog
+        });
+    </script>
+</body>
+
+{% endblock %}

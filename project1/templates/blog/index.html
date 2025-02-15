@@ -1,0 +1,101 @@
+{% extends 'header&footer/base.html' %}
+
+{% block content %}
+
+<head>
+    <title>Blog Posts List</title>
+</head>
+<div class="container mt-2">
+    <!-- slides of the blog -->
+    <div id="carouselExampleCaptions" class="carousel slide mb-4" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {% for slide in slides %}
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="{{ forloop.counter0 }}"
+                class="{% if forloop.first %}active{% endif %}" aria-current="{% if forloop.first %}true{% endif %}"
+                aria-label="Slide {{ forloop.counter }}"></button>
+            {% endfor %}
+        </div>
+
+        <div class="carousel-inner">
+            {% for slide in slides %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <a href="{% url 'post_detail' slide.slug %}">
+                    {% if slide.blog_list_image %}
+                    <img src="{{ slide.blog_list_image.url }}" class="d-block w-100" height="400px" width="100%"
+                        alt="{{ slide.title }}" style="border-radius: 5px; filter: brightness(0.5);">
+                    {% else %}
+                    <div class="d-block w-100" style="height: 400px; background-color: #333;">
+                        <!-- This div will be displayed if there's no image -->
+                    </div>
+                    {% endif %}
+                </a>
+                <div class="carousel-caption d-block">
+                    <h1><a href="{% url 'post_detail' slide.slug %}"
+                            class="text-decoration-none text-white">{{slide.title }}</a></h1>
+                    <hr>
+                    <p>{{ slide.description|safe|truncatewords:15 }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+<!-- end of the slide -->
+
+<!-- start card of the blogs -->
+<div class="row ms-1 me-1">
+    {% for post in pages %}
+    <div class="col-md-4 blog-post mb-2">
+        <div class="card">
+            {% if post.blog_list_image %}
+            <a href="{% url 'post_detail' post.slug %}">
+                <img src="{{ post.blog_list_image.url }}" alt="{{ post.title }}"
+                    style="padding: 20px; height: 250px; width: 400px;" class="img-fluid rounded-start">
+            </a>
+            {% else %}
+            <div style="padding: 20px; height: 250px; width: 400px; background-color: #333;"></div>
+            {% endif %}
+
+            <div class="card-body">
+                <h1 class="card-title" style="color: #2E8B57; font-size: 20px;">{{ post.title }}</h1>
+                <hr>
+                <p class="card-text">{{ post.description|safe|truncatewords:15 }}</p>
+                <a href="{% url 'post_detail' post.slug %}" class="btn btn-success">Read More</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p>No blog posts available.</p>
+    </div>
+    {% endfor %}
+</div>
+<!-- end the cord of the blog -->
+<br>
+<!-- paginator used here  -->
+<div class="text-center">
+    {% if pages.has_previous %}
+    <!-- <a href="?page=1" class="text-decoration-none">First Page</a> | -->
+    <a href="?page={{pages.previous_page_number}}" class="text-decoration-none">
+        << </a>
+            {% endif %}
+            | {{pages.number}} of {{pages.paginator.num_pages}} Pages |
+            {% if pages.has_next %}
+            <!-- <a href="?page={{pages.paginator.num_pages}}" class="text-decoration-none"> Last Page </a> | -->
+            <a href="?page={{pages.next_page_number}}" class="text-decoration-none">>></a>
+            {% endif %}
+    </a>
+</div>
+<!-- paginator end here -->
+{% endblock %}

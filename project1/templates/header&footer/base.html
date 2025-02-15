@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/additional-css.css' %}">
+    <script defer src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg" style="background-color: #2E8B57;">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" id="how1" id="brand" href="{% url 'home' %}">TouchPoint</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation" style="border-color: white;">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white {% if request.path == '/' %}active{% endif %}" aria-current="page"
+                            href="{% url 'home' %}" id="how1">Home</a>
+                    </li>
+                    <!-- Category menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false" id="how1">
+                            Category
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for category in cat_manu %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'category' category.slug %}" id="cat1">
+                                    {{ category }}
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li>
+                                <span class="dropdown-item">No categories available</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <!-- end category menu -->
+                    <!-- Category-wise-question menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false" id="how1">
+                            Question by Category
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for category in cat_manu %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'category-wise-question' category.slug %}"
+                                    id="cat1">
+                                    {{ category }}
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li>
+                                <span class="dropdown-item">No categories available</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <!-- end category-wiese question menu -->
+                    <!-- Test Series Menu Item -->
+                    <li class="nav-item">
+                        <a class="nav-link text-white {% if request.path == '/test-series/' %}active{% endif %}"
+                            aria-current="page" href="{% url 'sub-category-test' %}" id="how1">Sub Category</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white {% if request.path == '/test-series/' %}active{% endif %}"
+                            aria-current="page" href="{% url 'test-series' %}" id="how1">Test Series</a>
+                    </li>
+                    <!-- end the test series or subcategory list -->
+                    <li class="nav-item">
+                        <a class="nav-link text-white {% if request.path == '/contact/' %}active{% endif %}"
+                            aria-current="page" href="{% url 'contact' %}" id="how1">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white {% if request.path == '/about/' %}active{% endif %}"
+                            aria-current="page" href="{% url 'about' %}" id="how1">About Us</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search" method="POST" action="{% url 'searched_universaly' %}">
+                    {% csrf_token %}
+                    <input class="form-control me-2" name="search" type="search" placeholder="Search"
+                        aria-label="Search">
+                    <button class="btn btn-outline-light text-white" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <div style="background-color: #F0FFF0; border-radius: 4px; margin-top: 50px;" class="mx-2">
+        <div class="pt-2">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show ms-2 me-2" role="alert">
+                <strong class="text-success">{{ message }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            <div style="margin:5px; font-family: sans-serif;">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+
+        <!-- Remove the container if you want to extend the Footer to full width. -->
+        <div class="mt-1">
+
+            <!-- Footer -->
+            <footer class="text-center text-lg-start text-dark" style="background-color: #81c8a0;">
+                <!-- Section: Social media -->
+                <section class="d-flex justify-content-between align-items-center p-4"
+                    style="background-color: #2E8B57;">
+                    <!-- Left -->
+                    <div class="me-5 text-center text-lg-start mb-3 mb-lg-0">
+                        <p class="mb-0 text-light">Get connected with us:</p>
+                    </div>
+                    <!-- Left -->
+
+                    <!-- Right -->
+                    <div>
+                        <ul class="list-unstyled d-flex flex-column flex-lg-row justify-content-center mb-0">
+                            <li class="mb-2 mb-lg-0 me-4">
+                                <a href="https://www.facebook.com/" class="text-white text-decoration-none"
+                                    target="_blank">
+                                    <i class="fab fa-facebook-f"></i> Facebook
+                                </a>
+                            </li>
+                            <li class="mb-2 mb-lg-0 me-4">
+                                <a href="https://twitter.com/" class="text-white text-decoration-none" target="_blank">
+                                    <i class="fab fa-twitter"></i> Twitter
+                                </a>
+                            </li>
+                            <li class="mb-2 mb-lg-0 me-4">
+                                <a href="https://www.instagram.com/invites/contact/?igsh=1qs36mg4p1k67&utm_content=w1vv9wj"
+                                    class="text-white text-decoration-none" target="_blank">
+                                    <i class="fab fa-instagram"></i> Instagram
+                                </a>
+                            </li>
+                            <li class="mb-2 mb-lg-0 me-4">
+                                <a href="https://www.linkedin.com/in/" class="text-white text-decoration-none"
+                                    target="_blank">
+                                    <i class="fab fa-linkedin"></i> LinkedIn
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Right -->
+                </section>
+
+                <!-- social medica links end section  -->
+
+                <!-- Section: Links  -->
+                <section class="">
+                    <div class="container text-center text-md-start mt-5">
+                        <!-- Grid row -->
+                        <div class="row mt-3">
+                            <!-- Grid column -->
+                            <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                                <!-- Content -->
+                                <h6 class="text-uppercase fw-bold">Who We are?</h6>
+                                <hr class="mb-4 mt-0 d-inline-block mx-auto"
+                                    style="width: 110px; background-color: #0a090f; height: 2px" />
+                                <p class="ms-3 me-3 text-justify">
+                                    We are a dedicated team specializing in Politics, Geography, Latest News, Science,
+                                    and Tech. Our aim is to provide engaging and informative content that enriches your
+                                    daily life.
+                                </p>
+
+                            </div>
+                            <!-- Grid column -->
+
+                            <!-- Grid column -->
+                            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+                                <h6 class="text-uppercase fw-bold">Category</h6>
+                                <hr class="mb-4 mt-0 d-inline-block mx-auto"
+                                    style="width: 90px; background-color: #0a0614; height: 2px" />
+                                <ul class="no-bullets">
+                                    {% for category in cat_manu|slice:":5" %}
+                                    <li class="mb-2"><a class="text-dark text-decoration-none"
+                                            href="{% url 'category' category.slug %}">{{ category }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                            <!-- Grid column -->
+
+                            <!-- Grid column -->
+                            <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                                <!-- Links -->
+                                <h6 class="text-uppercase fw-bold">Useful links</h6>
+                                <hr class="mb-4 mt-0 d-inline-block mx-auto bg-dark"
+                                    style="width: 110px; height: 2px" />
+                                <p>
+                                    <a href="{% url 'about' %}" class="text-dark text-decoration-none">About Us</a>
+                                </p>
+                                <p>
+                                    <a href="{% url 'privacyandpolicy' %}"
+                                        class="text-dark text-decoration-none">Privacy Policy</a>
+                                </p>
+                                <p>
+                                    <a href="{% url 'declaration' %}"
+                                        class="text-dark text-decoration-none">Declaration</a>
+                                </p>
+                                <p>
+                                    <a href="{% url 'feedback' %}" class="text-dark text-decoration-none">Feedback</a>
+                                </p>
+                            </div>
+                            <!-- Grid column -->
+
+                            <!-- Grid column -->
+                            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                                <!-- Links -->
+                                <h6 class="text-uppercase fw-bold"><a class="text-decoration-none text-dark"
+                                        href="{% url 'contact' %}">Contact Us</a></h6>
+                                <hr class="mb-4 mt-0 d-inline-block mx-auto"
+                                    style="width: 100px; background-color: #0d0b14; height: 2px" />
+                                <p><i class="fas fa-home mr-3"></i> New Delhi, Delhi 10009, IND</p>
+                                <p><a href="mailto:amard7896@gmail.com"
+                                        class="text-decoration-none text-dark">amard7896@gmail.com</a></p>
+                                <p><a href="tel:+916206506449" class="text-decoration-none text-dark"> + 01 234 567
+                                        88</a></p>
+                                <p><a href="tel:+916206506449" class="text-decoration-none text-dark"> + 01 234 567
+                                        89</a></p>
+
+                            </div>
+                            <!-- Grid column -->
+                        </div>
+                        <!-- Grid row -->
+                    </div>
+                </section>
+                <!-- Section: Links  -->
+
+                <!-- Copyright -->
+                <div class="text-center p-3 text-light" style="background-color: rgba(2, 2, 2, 0.474)">
+                    © 2020 Copyright: All Copyright Reserved!
+
+                </div>
+                <!-- Copyright -->
+            </footer>
+            <!-- Footer -->
+
+        </div>
+        <!-- End of .container -->
+
+
+    </div>
+</body>
+
+</html>

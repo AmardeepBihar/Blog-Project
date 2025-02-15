@@ -1,0 +1,74 @@
+{% extends 'header&footer/base.html' %}
+{% load widget_tweaks %}
+{% block title %}Contact-us {% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-3 mb-3">
+        <a href="{% url 'contact' %}" class="text-decoration-none text-dark">Contact Us</a>
+    </h1>
+    <div class="row">
+        <!-- Contact Details Info - First Column -->
+        <div class="col-md-12 mb-4">
+            <ul style="list-style-type: none; padding: 58px 20px 58px 20px; border-radius: 6px;" class="bg-white text-center">
+                <li class="mb-3" style="font-size:30px; font-weight: 600;">Ram'sBlog</li>
+                <li class="mb-3">
+                    We’d love to hear from you! If you have any questions, suggestions, or feedback,<br> feel free to reach out.
+                    You can contact us via Email at
+                    <strong>
+                        <a href="mailto:amard7896@gmail.com" class="text-decoration-none text-success">amard7896@gmail.com</a>
+                    </strong><br>
+                    or call us at
+                    <strong>
+                        <a href="tel:+916206506449" class="text-decoration-none text-success">+91 6206506449</a>
+                    </strong>.
+                </li>
+                <li class="mb-3">For more detailed inquiries or collaborations, you can visit us at our office :<br>
+                    C-12 Street No-3, Texas, USA, 544643
+                </li>
+            </ul>
+        
+        </div>
+
+        <!-- Contact Form - Second Column -->
+        <div class="col-md-12 mb-4">
+            <h4 class="text-center" style="color: #2E8B57;">Get in Touch with Us</h4>
+            <hr>
+            <form action="{% url 'home' %}" method="POST">
+                {% csrf_token %}
+
+                <!-- Name Field -->
+                <label for="{{ form.name.id_for_label }}">Name</label>
+                {{ form.name|add_class:"form-control" }}
+
+                <!-- Phone Field -->
+                <label for="{{ form.phone.id_for_label }}">Phone</label>
+                {{ form.phone|add_class:"form-control" }}
+
+                <!-- Email Field -->
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email|add_class:"form-control" }}
+
+                <!-- Subject Field -->
+                <label for="{{ form.subject.id_for_label }}">Subject</label>
+                {{ form.subject|add_class:"form-control" }}
+
+                <!-- Message Field -->
+                <label for="{{ form.message.id_for_label }}">Message</label>
+                {{ form.message|add_class:"form-control" }}
+
+                <!-- Submit Button -->
+                <input type="submit" value="Send Message" class="btn btn-success mt-4 mb-3 form-control">
+            </form>
+        </div>
+<hr>
+        <!-- Google Map - Third Column -->
+        <div class="col-md-12 mt-4">
+            <h4 class="mb-4" style="color: #2E8B57;">Our Location</h4>
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3500.3377461570986!2d77.2148712!3d28.7205912!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfe0b7e2ffb23%3A0xe895871d6971ac3b!2sGandhi%20Vihar%20Police%20Chauki!5e0!3m2!1sen!2sin!4v1634092073123!5m2!1sen!2sin"
+                width="100%" height="500" style="border:solid #2E8B57 3px; border-radius: 5px;" allowfullscreen=""
+                loading="lazy"></iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}

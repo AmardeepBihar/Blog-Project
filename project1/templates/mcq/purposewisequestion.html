@@ -1,0 +1,222 @@
+{% extends 'header&footer/base.html' %}
+
+{% block content %}
+<head>
+    <title>{{ purpose.title }}</title>
+    <style>
+        /* Custom Radio Button Styles */
+        .custom-radio {
+            border: 2px solid black; /* 2px solid black border */
+        }
+
+        /* Success Color When Radio Button is Checked */
+        .custom-radio:checked {
+            border-color: #28a745 !important; /* Change border color to success green */
+        }
+
+        /* Optional: Change color of the circle when checked */
+        .custom-radio:checked:before {
+            background-color: #28a745 !important; /* Background color of checked circle */
+        }
+
+        #category-link:hover {
+            color: green;
+        }
+
+        #timeTracker {
+            font-weight: bold;
+            font-size: 18px;
+            color: red;
+        }
+
+        /* Style the progress bar */
+        .progress-bar {
+            transition: width 1s;
+        }
+    </style>
+</head>
+
+<div class="row my-4 mx-4">
+    <!-- Question Section -->
+    <div class="col-md-8 mb-3">
+        <div class="card" style="border: 1px solid black;">
+            <div class="card-body mx-3 my-3">
+                <!-- Display the selected category and timer -->
+                <p>
+                    <strong>Selected Category:</strong> {{ next_question.category.name }}&nbsp;|&nbsp;
+                    <span class="float-right" id="timeTracker">Time Remaining: <span id="timer">30</span> seconds</span>
+                </p>
+
+                <!-- Timer Progress Bar -->
+                <div class="progress my-3">
+                    <div id="progressBar" class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <hr style='border: black solid 2px;'>
+
+                <!-- Display the current question -->
+                {% if next_question %}
+                <p style="font-size: 17px; font-weight: 600;" class="card-title">{{ next_question.question }}</p>
+                <!-- Display the options for the current question -->
+                <form id="quizForm" method="get" action="{% url 'purpose-wise-question' purpose.slug %}">
+                    {% for option in options %}
+                    <div class="form-check">
+                        <input class="form-check-input custom-radio" type="radio" name="mcq_option"
+                               id="option{{ forloop.counter }}" value="{{ option }}" />
+                        <label class="form-check-label" for="option{{ forloop.counter }}">
+                            {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% elif forloop.counter == 4 %}D{% endif %}. {{ option }}
+                        </label>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Hidden field to track the current question id -->
+                    <input type="hidden" name="current_question" value="{{ next_question_id }}">
+                </form>
+
+                {% else %}
+                <p>No options available.</p>
+                {% endif %}
+
+                <!-- Submit Button -->
+                <button type="button" id="submitBtn" class="btn btn-success form-control mt-3">Submit</button>
+
+                <!-- Explanation Section (hidden initially) -->
+                <div id="answer-container" class="mt-4" style="display: none;">
+                    <div id="answer-message" class="alert alert-info">
+                        <span id="correct-answer"></span>
+                    </div>
+                    <!-- Explanation Message Section -->
+                    <div id="explanation-message" style="margin-top: 10px;">
+                        <strong>Explanation: </strong>{{ next_question.explanation|safe }}
+                    </div>
+                </div>
+
+                <!-- Next Button -->
+                <button type="button" id="nextBtn" class="btn btn-success form-control mt-3" style="display:none;">Next</button>
+
+                <!-- End Practice Button (Always Visible) -->
+                <a href="{% url 'endpractice' %}" class="btn btn-danger form-control mt-3" id="endPracticeBtn">End Practice</a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Section -->
+    <div class="col-md-4">
+        <div class="category text-center">
+            <h4 class="mb-3">Categories</h4>
+            {% if cat_manu %}
+            <div class="list-group">
+                {% for category in cat_manu %}
+                <div class="list-group-item mb-1" style="border: 1px solid #000;">
+                    <a class="dropdown-item" id="category-link" href="{% url 'category-wise-question' category.slug %}" id="cat1">
+                        <b>{{ category }}</b>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p><strong>No Category Available!</strong></p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let timeLeft = 30; // 30 seconds countdown
+        const timerElement = document.getElementById("timer");
+        const progressBar = document.getElementById("progressBar");
+
+        // Countdown timer functionality
+        const countdown = setInterval(function () {
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+            const progress = (timeLeft / 30) * 100; // Calculate percentage of time left
+            progressBar.style.width = progress + '%'; // Update progress bar width
+            progressBar.setAttribute("aria-valuenow", progress); // Update aria attribute for accessibility
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                moveToNextQuestion(); // Automatically move to the next question when time is up
+            }
+        }, 1000); // Update every second
+
+        // Submit button click handler
+        document.getElementById("submitBtn").addEventListener("click", function () {
+            var selectedOption = document.querySelector('input[name="mcq_option"]:checked');
+
+            if (selectedOption) {
+                var selectedAnswer = selectedOption.value;  // The value of the selected option
+                var correctAnswer = "{{ next_question.correct_answer }}"; // Correct answer from the backend
+
+                // Show explanation after submission
+                var answerContainer = document.getElementById("answer-container");
+                var answerMessage = document.getElementById("answer-message");
+                var correctAnswerLabel = document.getElementById("correct-answer");
+
+                // Show the explanation
+                answerContainer.style.display = 'block';
+
+                if (selectedAnswer === correctAnswer) {
+                    correctAnswerLabel.innerHTML = 'Correct!';
+                    answerMessage.classList.remove('alert-info', 'alert-danger');
+                    answerMessage.classList.add('alert-success');
+                    answerMessage.style.backgroundColor = '#4acf85';
+                    answerMessage.style.color = 'black';
+                } else {
+                    correctAnswerLabel.innerHTML = "Incorrect! The correct answer is: " + correctAnswer;
+                    answerMessage.classList.remove('alert-info', 'alert-success');
+                    answerMessage.classList.add('alert-danger');
+                    answerMessage.style.backgroundColor = '#dc3545';
+                    answerMessage.style.color = 'white';
+                }
+
+                // Send the selected answer to the backend to store in the session
+                var data = {
+                    selected_answer: selectedAnswer,
+                    correct_answer: correctAnswer,
+                    question_id: "{{ next_question.id }}"
+                };
+
+                fetch("{% url 'update-session-results' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.status);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+
+                // Hide the submit button and show the next button
+                document.getElementById("submitBtn").style.display = 'none';
+                document.getElementById("nextBtn").style.display = 'block';
+            } else {
+                alert("Please select an answer before submitting.");
+            }
+        });
+
+        // Next button functionality (move to the next question)
+        document.getElementById("nextBtn").addEventListener("click", function () {
+            window.location.href = "{% url 'purpose-wise-question' purpose.slug %}?current_question={{ next_question_id }}";
+        });
+
+        // End Practice button functionality (always visible)
+        document.getElementById("endPracticeBtn").addEventListener("click", function () {
+            window.location.href = "{% url 'endpractice' %}";
+        });
+
+        // Automatically move to the next question after the time limit (30 seconds)
+        function moveToNextQuestion() {
+            window.location.href = "{% url 'purpose-wise-question' purpose.slug %}?current_question={{ next_question_id }}";
+        }
+    });
+</script>
+{% endblock %}

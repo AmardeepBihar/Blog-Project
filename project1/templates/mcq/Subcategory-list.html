@@ -1,0 +1,78 @@
+{% extends 'header&footer/base.html' %}
+
+{% block content %}
+<head>
+  <title>Sub-Categories for Practice</title>
+  <style>
+    #rand-question:hover {
+      color: rgb(246, 186, 97);
+    }
+    #rand-question {
+      color: #2E8B57;
+      margin-left: 30px;
+    }
+
+    .card-body {
+      padding: 25px;
+    }
+
+    .card-title, .card-text {
+      font-size: 20px;
+    }
+
+    @media (max-width: 576px) {
+      .card-title {
+        font-size: 25px;
+      }
+
+      .card-text {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+
+<div class="container-fluid my-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><strong>Available Sub Categories for Practice</strong></h3>
+    <div style="display: flex; align-items: center; justify-content: flex-end;">
+      <p style="margin-right: 5px; margin-top: 15px;">We have Total {{ total_question }} Questions for practice</p>
+      <span>|</span>
+      {% if random_question %}
+      <a href="{% url 'ansthequestion' random_question.uid %}" class="text-decoration-none" id="rand-question" style="font-size: 15px; margin-left: 5px;">
+        <strong>Practice with random question</strong>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <hr style="border: 3px black solid;">
+
+  {% if category_subcategories %}
+    {% for category, subcategories in category_subcategories.items %}
+      <div class="category-section">
+        <h4><strong>{{ category.name }}</strong></h4>
+        <div class="row">
+          {% for sub_list in subcategories %}
+            <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+              <a href="{% url 'sub-category-wise-question' sub_list.slug %}" class="text-decoration-none">
+                <div class="card" style="height: 250px; background-color: rgb(246, 198, 126);">
+                  <div class="card-body d-flex flex-column">
+                    <h5 class="card-title"><b>{{ sub_list.name }}</b></h5>
+                    <hr style="border: 2px black solid;">
+                    <p class="card-text" style="font-size: 15px; flex-grow: 1;">{{ sub_list.description }}</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <hr style="border: 3px black solid;">
+    {% endfor %}
+  {% else %}
+    <h4 class="mx-4">There are no sub-categories available now. We will make them available soon...</h4>
+  {% endif %}
+</div>
+
+{% endblock %}

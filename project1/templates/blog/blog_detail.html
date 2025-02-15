@@ -1,0 +1,101 @@
+{% extends 'header&footer/base.html' %}
+{% block title %}{{ blog.title }}{% endblock %}
+{% block content %}
+<head>
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="{{ blog.meta_description }}">
+    <meta name="keywords" content="blog, {{ blog.category }}, {{ blog.language }}, {{ blog.author.first_name }} {{ blog.author.last_name }}">
+
+    <!-- Meta Tags for Responsive Design -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Custom Styles */
+        .blog-detail {
+            padding: 7px;
+            margin: 10px; /* Added margin */
+        }
+        .blog-content img {
+            border: black 2px solid;
+            margin-bottom: 20px;
+        }
+        .sidebar-heading {
+            font-size: 18px;
+        }
+        .card-body {
+            font-size: 14px;
+        }
+        .back-to-home {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body style="border-radius: 4px;" id="top">
+    <div class="blog-detail" style="text-align: justify;">
+        <div class="row">
+            <!-- Main Blog Content (3/4 width on medium screens, full width on smaller screens) -->
+            <div class="col-12 col-md-9 blog-content" style="padding: 20px;">
+                <h3 class="text-dark fw-bold mb-4" id="scroll_on_top">{{ blog.title }}</h3>
+                <p><strong>Author:</strong> {{ blog.author.first_name }} {{ blog.author.last_name }} |
+                    <strong>Published on:</strong> {{ blog.created_at|date:"F j, Y" }} | <strong>Category:</strong> {{ blog.category }}
+                </p>
+                <hr style="border: 2px solid black;" />
+                {% if blog.featured_image %}
+                <img src="{{ blog.featured_image.url }}" class="img-fluid rounded" alt="{{ blog.title }}" width='100%'>
+                {% endif %}
+                <div>
+                    <p>{{ blog.content|safe }}</p>
+                </div>
+            
+                {% if blog.pdf_file %}
+                <div class="pdf-embed-container">
+                    <h4>PDF View:</h4>
+                    <!-- Embed the PDF without the toolbar, preventing download/print options -->
+                    <iframe src="{{ blog.pdf_file.url }}" width="100%" height="900" style="border: none;"></iframe>
+                </div>
+                {% endif %}
+
+                <!-- "Back to Home" Button -->
+                <div class="text-center mt-4 back-to-home">
+                    <a href="#top">Top</a>
+                </div>
+            </div>
+            <!-- Sidebar with Blog Suggestions (1/4 width on medium screens, full width on smaller screens) -->
+            <div class="col-12 col-md-3 blog-sidebar">
+                <h4 class="sidebar-heading ms-4" style="margin-top:50px;">Recent Blogs</h4>
+                <hr style="border: 2px solid black;" class="ms-4 me-4" />
+                <ul class="blog-suggestions-list">
+                    {% for object in excluded_blog %}
+                    <div class="card-body">
+                        <p class="card-title text-success me-4">
+                            <a href="{% url 'post_detail' object.slug %}"><strong>{{ object.title }}</strong></a>
+                        </p>
+                        <p class="card-text me-4 mt-2" style="font-size: 13px;">
+                            {{ object.content|safe|truncatewords:15 }}
+                        </p>
+                        <p style="font-size: 13px;">Published: {{ object.created_at|timesince }} ago</p>
+                    </div>
+                    <hr style="border: 2px solid black;" class="me-4" />
+                    {% endfor %}
+                </ul>
+
+                <h4 class="sidebar-heading ms-4">Popular Blogs</h4>
+                <hr style="border: 2px solid black;" class="me-4 ms-4" />
+                <ul class="blog-suggestions-list">
+                    {% for object in random_blogs %}
+                    <div class="card-body">
+                        <p class="card-title text-success me-4">
+                            <a href="{% url 'post_detail' object.slug %}"><strong>{{ object.title }}</strong></a>
+                        </p>
+                        <p class="card-text me-4 mt-2" style="font-size: 13px;">
+                            {{ object.content|safe|truncatewords:15 }}
+                        </p>
+                        <p style="font-size: 13px;">Published: {{ object.created_at|timesince }} ago</p>
+                    </div>
+                    <hr style="border: 2px solid black;" class="me-4" />
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

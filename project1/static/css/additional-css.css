@@ -1,0 +1,82 @@
+.no-bullets {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.active {
+    font-weight: bold;
+    /* Make it bold */
+    color: #615454;
+    /* Change the text color */
+    text-decoration: underline;
+    /* Underline the active item */
+    /* Optional: Light background for the active item */
+}
+ #brand{font-weight: 600;}
+ #brand:hover{color: rgb(227, 248, 126);}
+ #how1:hover{color: white;}
+ .navbar {
+    position: fixed; /* Fixes the navbar to the top */
+    top: 0; /* Positions it at the top */
+    left: 0; /* Ensures it aligns to the left */
+    width: 100%; /* Makes it full width */
+    z-index: 1000; /* Ensures it stays above other elements */
+}
+/* to utilise time to open the toglar */
+.navbar-collapse{transition: all 0.7s;}
+/* to change the color of togle */
+.navbar-toggler-icon{
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+.navbar-toggler {
+    border: 3px solid white; /* Add white border */
+}
+.blog-detail {
+    margin-top: 30px;
+}
+
+.blog-content {
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.blog-sidebar {
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-heading {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.blog-suggestions-list li {
+    list-style-type: none;
+    padding: 10px 0;
+}
+
+.blog-suggestions-list li a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.blog-suggestions-list li a:hover {
+    text-decoration: underline;
+}
+  .correct {
+            background-color: #3db270 !important;
+            color: white;
+        }
+        .incorrect {
+            background-color: #dc3545 !important;
+            color: white;
+        }
+        .explanation {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-left: 4px solid #44c37b;
+        }

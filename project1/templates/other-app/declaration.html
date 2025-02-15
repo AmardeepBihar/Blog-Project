@@ -1,0 +1,52 @@
+{% extends 'header&footer/base.html' %}
+
+{% block content %}
+<head><title>Declaration</title></head>
+<div class="container" style="text-align: justify;">
+    <div class="m-3 pb-2">
+        <h5 class="text-center text-success">Declaration</h5>
+        <hr>
+        <p class="mt-3 text-success"><b>Welcome to Ram'sBlog!</b></p>
+        <p class="mt-3 text-success"><b>Purpose of This Blog Site.</b></p>
+        <p class="text-wrap">At Ram'sBlog, our primary aim is to offering comprehensive, well-researched content on a
+            variety of subjects, including Politics, Geography, Science, Technology, and more. Our goal is to deliver
+            high-quality, in-depth articles that cater to both the curious minds and the dedicated learners.</p>
+        <p class="mt-3 text-success"><b>Content and Accuracy</b></p>
+        <p> We strive to ensure that the information on our blog is accurate, up-to-date, and relevant. However,
+            Ram'sBlog makes no warranties regarding the completeness or accuracy of the content provided. The content is
+            for informational purposes only and should not be considered professional advice. Always consult with a
+            qualified professional before making any decisions based on information from our blog.</p>
+        <p class="mt-3 text-success"><b>Copyright and Intellectual Property</b></p>
+        <p>All content on Ram'sBlog is the property of [Your Blog Name] or its contributors and is protected by
+            copyright laws. You may not reproduce, distribute, or modify any content from this site without our express
+            written permission. For inquiries about using our content, please contact us at Ram'sBlog! </p>
+        <p class="mt-3 text-success"><b>External Links</b></p>
+        <p>Our blog may contain links to external websites for your convenience and reference. We do not endorse or take
+            responsibility for the content, accuracy, or practices of these external sites. Clicking on these links is
+            done at your own risk.</p>
+        <p class="mt-3 text-success"><b>Privacy and Data Collection</b></p>
+        <p>We value your privacy. Please review our <a class="text-decoration-none-underline text-dark"
+                href="{% url 'privacyandpolicy' %}"> Privacy Policy</a> to understand how we collect, use, and protect
+            your personal information. By using our blog, you consent to our privacy practices as outlined in that
+            policy.</p>
+        <p class="mt-3 text-success"><b>User Contributions</b></p>
+        <p>We welcome and encourage user contributions, including comments and guest posts. However, we reserve the
+            right to moderate and remove any content that we deem inappropriate, offensive, or irrelevant. By
+            contributing to our blog, you grant us a non-exclusive, royalty-free license to use, reproduce, and display
+            your content.</p>
+        <p class="mt-3 text-success"><b>Changes to This Declaration</b></p>
+        <p>We may update this declaration from time to time to reflect changes in our practices or legal requirements.
+            Any changes will be posted on this page, and we encourage you to review this declaration periodically.</p>
+        <p><a class="text-decoration-none-underline text-success" href="{% url 'contact' %}"><b>Contact Us</b></a></p>
+        <p>If you have any questions, concerns, or feedback regarding this declaration or any other aspect of our blog,
+            please feel free to contact us.</p>
+
+        <p class="fw-bold">Thank you for visiting <a class="text-decoration-none-underline text-dark"
+                href="{% url 'home' %}">Ram'sBlog</a> We hope you find our content valuable and engaging.</p>
+        <p>Feel free to adjust the sections based on your blog's specific needs and legal considerations. Adding links
+            to your privacy policy and any other relevant pages will also help ensure that visitors have access to
+            important information.</p>
+        <hr>
+    </div>
+</div>
+{% endblock %}

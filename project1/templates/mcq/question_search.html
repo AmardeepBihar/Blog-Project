@@ -1,0 +1,151 @@
+{% extends 'header&footer/base.html' %}
+
+{% block content %}
+<head>
+    <title>{{ ans.question }}</title>
+    <style>
+        /* Custom Radio Button Styles */
+        .custom-radio {
+            border: 2px solid black; /* 2px solid black border */
+        }
+
+        /* Success Color When Radio Button is Checked */
+        .custom-radio:checked {
+            border-color: #28a745 !important; /* Change border color to success green */
+        }
+
+        /* Optional: Change color of the circle when checked */
+        .custom-radio:checked:before {
+            background-color: #28a745 !important; /* Background color of checked circle */
+        }
+    </style>
+</head>
+
+<div class="row my-4 mx-4">
+    <!-- Question and Options Section -->
+    <div class="col-md-8 mb-3">
+        <div class="card" style="border: 1px solid black;">
+            <div class="card-body mx-3 my-3">
+                <p style="font-size: 15px;"><strong>Category:</strong> {{ ans.category }}</p><hr>
+                <p style="font-size: 17px;font-weight: 600;" class="card-title">{{ ans.question }}</p>
+
+                <!-- Options Section -->
+                <form id="quizForm">
+                    {% for option in options %}
+                        <div class="form-check">
+                            <input class="form-check-input custom-radio" type="radio" name="mcq_option" id="option{{ forloop.counter }}" data-answer="{{ forloop.counter0 }}" value="{{ option }}" />
+                            <label class="form-check-label" for="option{{ forloop.counter }}">
+                                {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% elif forloop.counter == 4 %}D{% endif %} 
+                                . {{ option }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </form>
+
+                <!-- Answer Message and Explanation Section -->
+                <div id="answer-container" class="mt-4" style="display: none;">
+                    <div id="answer-message" class="alert alert-info">
+                        <span id="correct-answer"></span>
+                    </div>
+                    <!-- Additional Explanation Message Section -->
+                    <div id="explanation-message" style="margin-top: 10px;"><strong>Explanation : </strong>{{ans.explanation|safe}}</div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="button" id="submitBtn" class="btn btn-success form-control mt-3">Submit</button>
+
+                <!-- Next Button -->
+                <button type="button" id="nextBtn" class="btn btn-success form-control mt-3" style="display:none;">Next</button>
+                
+                <a href="{% url 'endpractice' %}" class="btn btn-danger form-control mt-3" style="display:none;" id="endPracticeBtn">End Practice</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Random Questions Sidebar -->
+    <div class="col-md-4">
+        <h5 class="mb-3 text-center">Other Questions</h5>
+        <ul class="list-group">
+            {% for question in random_question %}
+                <li class="list-group-item mt-1" style="border: 1px solid black;">
+                    <!-- Link to the other random question (you might want to link this to its respective page) -->
+                    <a href="{% url 'ansthequestion' question.uid %}" class="text-decoration-none">{{ question.question|truncatewords:10 }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+    // JavaScript for handling form submission and displaying explanation
+    document.getElementById("submitBtn").addEventListener("click", function () {
+        // Get the selected answer
+        var selectedOption = document.querySelector('input[name="mcq_option"]:checked');
+        if (selectedOption) {
+            var selectedAnswer = selectedOption.value; // The value of the selected option
+            var correctAnswer = "{{ ans.correct_ans }}"; // Correct answer from the backend
+            var answerContainer = document.getElementById("answer-container");
+            var answerMessage = document.getElementById("answer-message");
+            var correctAnswerLabel = document.getElementById("correct-answer");
+            var explanationMessage = document.getElementById("explanation-message");
+    
+            // Show the explanation and answer message
+            answerContainer.style.display = 'block';
+    
+            // Check if the selected answer is correct
+            if (selectedAnswer === correctAnswer) {
+                correctAnswerLabel.innerHTML = 'Correct!';
+                answerMessage.classList.remove('alert-info', 'alert-danger');
+                answerMessage.classList.add('alert-success');
+                // Custom styling for correct answer: green background and black text
+                answerMessage.style.backgroundColor = '#4acf85'; // Green background
+                answerMessage.style.color = 'black'; // Black text
+            } else {
+                correctAnswerLabel.innerHTML = "Incorrect! The correct answer is: " + correctAnswer;
+                answerMessage.classList.remove('alert-info', 'alert-success');
+                answerMessage.classList.add('alert-danger');
+                // Default red background for incorrect answers
+                answerMessage.style.backgroundColor = '#dc3545'; // Red background
+                answerMessage.style.color = 'white'; // White text
+            }
+    
+            // Send the selected answer and correct answer to the backend via AJAX
+            var data = {
+                selected_answer: selectedAnswer,
+                correct_answer: correctAnswer,
+                question_id: "{{ ans.id }}" // Send the question ID as part of the data
+            };
+    
+            fetch("{% url 'update-session-results' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.status); // Log success or error
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    
+            // Hide the submit button and show the next and end buttons
+            document.getElementById("submitBtn").style.display = 'none';
+            document.getElementById("nextBtn").style.display = 'block';
+            document.getElementById("endPracticeBtn").style.display = 'block';  // Make the End Practice button visible
+        } else {
+            alert("Please select an answer before submitting.");
+        }
+    });
+    
+    // JavaScript for Next button to load a new random question
+    document.getElementById("nextBtn").addEventListener("click", function () {
+        // Redirect to the next random question URL
+        window.location.href = "{% url 'ansthequestion' next_question.uid %}";
+    });
+</script>
+    
+{% endblock %}
